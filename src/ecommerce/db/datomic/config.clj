@@ -1,14 +1,14 @@
 (ns ecommerce.db.datomic.config
   (:use clojure.pprint)
   (:require [datomic.api :as d]
-            [ecommerce.model :as model]))
+            [ecommerce.produto.model :as produto.model]))
 
 (def db-uri "datomic:dev://localhost:4334/ecommerce")
 
 (defn abre-conexao []
   (d/create-database db-uri)
   (let [conn (d/connect db-uri)]
-    (d/transact conn model/produto-skeleton)
+    (d/transact conn produto.model/produto-schema)
     conn))
 
 (defn apaga-banco []
