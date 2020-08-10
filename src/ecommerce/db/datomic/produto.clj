@@ -1,10 +1,15 @@
 (ns ecommerce.db.datomic.produto
   (:require [datomic.api :as d]))
 
+;pull explicit attr by attr
 (defn find-all [db]
-  (d/q '[:find ?entidade
+  (d/q '[:find (pull ?entidade [:produto/nome :produto/preco :produto/slug])
          :where [?entidade :produto/nome]] db))
-;any entity that has the attribute :produto/nome
+
+;pull generic return all including the id
+(defn find-all2 [db]
+  (d/q '[:find (pull ?entidade [*])
+         :where [?entidade :produto/nome]] db))
 
 (defn find-by-slug
   [db slug]
@@ -12,6 +17,7 @@
          :in $ ?slug-buscado
          :where [?entidade :produto/slug ?slug-buscado]]
        db slug))
+;any entity that has the attribute :produto/slug
 
 (defn find-all-slugs
   [db]
@@ -22,6 +28,8 @@
 (defn find-price-and-name
   [db]
   (d/q '[:find ?nome ?preco
+         ;:keys nome preco ;[{:nome x :preco y}]
+         :keys produto/nome produto/preco ;[#:produto{:nome x :preco y}]
          :where [?produto :produto/preco ?preco]
                 [?produto :produto/nome ?nome]] db))
 ;if the ?produto is no explicit the return will be a cartesian product
