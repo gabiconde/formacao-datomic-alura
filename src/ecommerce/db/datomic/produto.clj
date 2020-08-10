@@ -12,6 +12,12 @@
          :where [?entidade :produto/slug ?slug-buscado]]
        db slug))
 
+(defn find-all-slugs
+  [db]
+  (d/q '[:find ?slug
+         :where [_ :produto/slug ?slug]] db))
+;use _ when we don't care about the data
+
 (defn update-produto
   [conn id-entity attr value]
   @(d/transact conn [[:db/add id-entity attr value]]))

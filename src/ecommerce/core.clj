@@ -21,6 +21,7 @@
 (def db (d/db conn))
 (pprint (produto/find-all db))
 (pprint (produto/find-by-slug db "/camera"))
+(pprint (produto/find-all-slugs db))
 
 (d/transact conn [{:produto/nome "Calculadora"}])
 
