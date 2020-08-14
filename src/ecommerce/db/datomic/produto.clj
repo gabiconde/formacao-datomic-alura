@@ -62,3 +62,8 @@
 (defn one-produto
   [db id]
   (d/pull db '[*] id))
+;por padrao d/pull busca por db/id
+
+(defn one-produto-by-id
+  [db produto-id]
+  (d/pull db '[*] [:produto/id produto-id]))

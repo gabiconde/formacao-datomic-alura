@@ -13,12 +13,16 @@
       notebook (model/novo-produto "Notebook" "/notebook" 5648.90M)]
 
   (pprint @(d/transact conn [camera celular calculadora notebook]))
-  (def produto-id (-> (produto/find-all2 (d/db conn))
-                      first
-                      first
-                      :db/id))
-  (print produto-id)
-  (pprint (produto/one-produto (d/db conn) produto-id)))
+  (def produto-db-id (-> (produto/find-all2 (d/db conn))
+                         ffirst
+                         :db/id))
+  (pprint (produto/one-produto (d/db conn) produto-db-id)))
+
+(def produto-id (-> (produto/find-all2 (d/db conn))
+                    second
+                    first
+                    :produto/id))
+(pprint (produto/one-produto-by-id (d/db conn) produto-id))
 
 
 ;(db/apaga-banco)
