@@ -58,3 +58,7 @@
 (defn remove-produto
   [conn id-entity attr value]
   @(d/transact conn [[:db/retract id-entity attr value]]))
+
+(defn one-produto
+  [db id]
+  (d/pull db '[*] id))
