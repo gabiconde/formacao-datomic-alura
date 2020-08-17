@@ -1,4 +1,4 @@
-(ns ecommerce.introducaoDatomic.aula6
+(ns ecommerce.avancandoComModelo.aula1
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
@@ -13,14 +13,16 @@
       notebook (model/novo-produto "Notebook" "/notebook" 5648.90M)]
 
   (pprint @(d/transact conn [camera celular calculadora notebook]))
-  (pprint (produto/find-by-price (d/db conn) 1000))
+  (def produto-db-id (-> (produto/find-all2 (d/db conn))
+                         ffirst
+                         :db/id))
+  (pprint (produto/one-produto (d/db conn) produto-db-id)))
 
-  (produto/update-produto! conn 17592186045436 :produto/tags "flash")
-  (produto/update-produto! conn 17592186045436 :produto/tags "lente 18mm")
+(def produto-id (-> (produto/find-all2 (d/db conn))
+                    second
+                    first
+                    :produto/id))
+(pprint (produto/one-produto-by-id (d/db conn) produto-id))
 
-  (produto/update-produto! conn 17592186045437 :produto/tags "android 10")
-  (produto/update-produto! conn 17592186045438 :produto/tags "flash")
 
-  (pprint (produto/find-by-tag (d/db conn) "flash")))
-
-;(db/apaga-banco)
+;(db/apaga-banco))

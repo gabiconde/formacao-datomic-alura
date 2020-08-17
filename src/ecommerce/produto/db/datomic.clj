@@ -1,4 +1,4 @@
-(ns ecommerce.db.datomic.produto
+(ns ecommerce.produto.db.datomic
   (:require [datomic.api :as d]))
 
 ;pull explicit attr by attr
@@ -51,7 +51,11 @@
          :where [?produto :produto/tags ?tag]]
        db tag))
 
-(defn update-produto
+(defn insert-produto!
+  [conn produto]
+  @(d/transact conn produto))
+
+(defn update-produto!
   [conn id-entity attr value]
   @(d/transact conn [[:db/add id-entity attr value]]))
 
@@ -67,3 +71,16 @@
 (defn one-produto-by-id
   [db produto-id]
   (d/pull db '[*] [:produto/id produto-id]))
+
+(defn db-adds-produtos
+  [produtos categoria]
+  (reduce (fn [db-adds produto] (conj db-adds [:db/add
+                                               [:produto/id (:produto/id produto)]
+                                               :produto/categoria
+                                               [:categoria/id (:categoria/id categoria)]]))
+          []
+          produtos))
+
+(defn atribui-categoria!
+  [conn produtos categoria]
+  (d/transact conn (db-adds-produtos produtos categoria)))

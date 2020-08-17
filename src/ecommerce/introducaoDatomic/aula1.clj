@@ -1,8 +1,8 @@
-(ns ecommerce.aula1
+(ns ecommerce.introducaoDatomic.aula1
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as config]
-            [ecommerce.db.datomic.produto :as datomic.produto]
+            [ecommerce.produto.db.datomic :as produto]
             [ecommerce.produto.model :as model]))
 
 (def conn (config/abre-conexao))
@@ -14,7 +14,7 @@
 
 ;two transactors (read/write)
 ;conn is only for read
-(datomic.produto/find-all (d/db conn)) ;snapshot of db, only read
+(produto/find-all (d/db conn)) ;snapshot of db, only read
 
 ;our schema accept a insert with only one attribute
 (d/transact conn [{:produto/nome "Calculadora"}])

@@ -1,9 +1,9 @@
-(ns ecommerce.aula5
+(ns ecommerce.introducaoDatomic.aula5
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
             [ecommerce.produto.model :as model]
-            [ecommerce.db.datomic.produto :as produto]))
+            [ecommerce.produto.db.datomic :as produto]))
 
 (def conn (db/abre-conexao))
 
