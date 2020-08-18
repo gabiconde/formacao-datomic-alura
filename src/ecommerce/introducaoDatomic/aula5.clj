@@ -1,11 +1,11 @@
-(ns ecommerce.aula5
+(ns ecommerce.introducaoDatomic.aula5
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
             [ecommerce.produto.model :as model]
-            [ecommerce.db.datomic.produto :as produto]))
+            [ecommerce.produto.db.datomic :as produto]))
 
-(def conn (db/abre-conexao))
+(def conn (db/abre-conexao!))
 
 (let [camera (model/novo-produto "Camera" "/camera" 2500.10M)
       celular (model/novo-produto "Celular" "/celular" 34.9M)
@@ -31,4 +31,4 @@
 (pprint (produto/find-all (d/as-of (d/db conn) #inst "2020-08-10T23:50:50.770-00:00")))
 
 
-;(db/apaga-banco)
+;(db/apaga-banco!)

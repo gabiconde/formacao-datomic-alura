@@ -1,11 +1,11 @@
-(ns ecommerce.aulas2-3-4
+(ns ecommerce.introducaoDatomic.aulas2-3-4
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
             [ecommerce.produto.model :as model]
-            [ecommerce.db.datomic.produto :as produto]))
+            [ecommerce.produto.db.datomic :as produto]))
 
-(def conn (db/abre-conexao))
+(def conn (db/abre-conexao!))
 
 (let [camera (model/novo-produto "Camera" "/camera" 2500.10M)
       celular (model/novo-produto "Celular" "/celular" 34.9M)
@@ -13,7 +13,7 @@
       id-entity (-> resultado :tempids vals first)]
 
   (pprint resultado)
-  (pprint (produto/update-produto conn id-entity :produto/preco 23.0M))
+  (pprint (produto/update-produto! conn id-entity :produto/preco 23.0M))
   ;(pprint (produto/remove conn id-entity :produto/slug "/celular"))
 
   (d/transact conn [camera]))
@@ -26,4 +26,4 @@
 
 (d/transact conn [{:produto/nome "Calculadora"}])
 
-(db/apaga-banco)
+(db/apaga-banco!)
