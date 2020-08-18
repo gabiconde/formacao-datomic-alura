@@ -37,7 +37,7 @@
                                 :produto/categoria [:categoria/id (:categoria/id jogos)]}])
 
 (produto/find-product-and-category-names (d/db conn))
-(produto/resumo-precos (d/db conn))
-(produto/resumo-precos-por-categoria (d/db conn))
+(produto/produto-mais-caro (d/db conn))
+(produto/produto-mais-barato (d/db conn))
 
 ;(db/apaga-banco!)

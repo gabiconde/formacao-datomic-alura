@@ -111,3 +111,22 @@
                 [?produto :produto/categoria ?categoria]
                 [?categoria :categoria/nome ?nome-categoria]]
        db))
+
+;nested query
+(defn produto-mais-caro
+  [db]
+  (d/q '[:find (pull ?produto [*])
+         :where [(q '[:find (max ?preco)
+                      :where [_ :produto/preco ?preco]]
+                    $) [[?preco]]]
+                [?produto :produto/preco ?preco]]
+       db))
+
+(defn produto-mais-barato
+  [db]
+  (d/q '[:find (pull ?produto [*])
+         :where [(q '[:find (min ?preco)
+                      :where [_ :produto/preco ?preco]]
+                    $) [[?preco]]]
+                [?produto :produto/preco ?preco]]
+       db))
