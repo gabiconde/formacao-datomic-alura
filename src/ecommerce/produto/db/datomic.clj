@@ -93,3 +93,21 @@
                 [?produto :produto/categoria ?categoria]
                 [?categoria :categoria/nome ?nome-categoria]]
        db))
+
+(defn resumo-precos
+  [db]
+  (d/q '[:find (min ?preco) (max ?preco) (count ?preco)
+         :keys minimo maximo total
+         :with ?produto
+         :where [?produto :produto/preco ?preco]]
+       db))
+
+(defn resumo-precos-por-categoria
+  [db]
+  (d/q '[:find ?nome-categoria (min ?preco) (max ?preco) (count ?preco) (sum ?preco)
+         :keys categoria minimo maximo total soma
+         :with ?produto
+         :where [?produto :produto/preco ?preco]
+                [?produto :produto/categoria ?categoria]
+                [?categoria :categoria/nome ?nome-categoria]]
+       db))
