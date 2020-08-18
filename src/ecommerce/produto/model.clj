@@ -20,8 +20,8 @@
                       :db/valueType   :db.type/uuid
                       :db/cardinality :db.cardinality/one
                       :db/unique      :db.unique/identity}
-                     {:db/ident :produto/categoria
-                      :db/valueType :db.type/ref
+                     {:db/ident       :produto/categoria
+                      :db/valueType   :db.type/ref
                       :db/cardinality :db.cardinality/one}
 
                      {:db/ident       :categoria/nome
@@ -30,7 +30,11 @@
                      {:db/ident       :categoria/id
                       :db/valueType   :db.type/uuid
                       :db/cardinality :db.cardinality/one
-                      :db/unique      :db.unique/identity}])
+                      :db/unique      :db.unique/identity}
+
+                     {:db/ident      :tx-data/ip
+                      :db/valueType   :db.type/string
+                      :db/cardinality :db.cardinality/one}])
 
 (defn uuid []
   (UUID/randomUUID))

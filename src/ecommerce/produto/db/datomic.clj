@@ -52,8 +52,12 @@
        db tag))
 
 (defn insert-produto!
-  [conn produto]
-  @(d/transact conn produto))
+  ([conn produto]
+   @(d/transact conn produto))
+
+  ([conn produto ip]
+   (let [db-add-ip [:db/add "datomic.tx" :tx-data/ip ip]]
+     @(d/transact conn (conj produto db-add-ip)))))
 
 (defn update-produto!
   [conn id-entity attr value]
@@ -130,3 +134,11 @@
                     $) [[?preco]]]
                 [?produto :produto/preco ?preco]]
        db))
+
+(defn todos-produtos-por-ip
+  [db ip]
+  (d/q '[:find (pull ?produto [*])
+         :in $ ?ip
+         :where [?transacao :tx-data/ip ?ip]
+                [?produto :produto/id _ ?transacao]]
+       db ip))
