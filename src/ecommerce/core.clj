@@ -13,33 +13,28 @@
 (def eletronicos (categoria.model/nova-categoria "eletronicos"))
 (categoria/insert-categoria! conn [jogos eletronicos])
 
-(pprint (categoria/todas-as-categorias (d/db conn)))
+(def camera (model/novo-produto "Camera" "/camera" 2500.10M))
+(def celular (model/novo-produto "Celular" "/celular" 34.9M))
+(def calculadora {:produto/nome "Calculadora"})
+(def notebook (model/novo-produto "Notebook" "/notebook" 5648.90M))
+(produto/insert-produto! conn [camera celular calculadora notebook])
 
-(let [camera (model/novo-produto "Camera" "/camera" 2500.10M)
-      celular (model/novo-produto "Celular" "/celular" 34.9M)
-      calculadora {:produto/nome "Calculadora"}
-      notebook (model/novo-produto "Notebook" "/notebook" 5648.90M)]
+(produto/atribui-categoria! conn [camera celular notebook] eletronicos)
 
-  (pprint (produto/insert-produto! conn [camera celular calculadora notebook]))
-  (def produto-db-id (-> (produto/find-all2 (d/db conn))
-                         ffirst
-                         :db/id))
-  (pprint (produto/one-produto (d/db conn) produto-db-id))
+;insert with nested map
+(produto/insert-produto! conn [{:produto/id        (model/uuid)
+                                :produto/nome      "Camiseta"
+                                :produto/slug      "/camiseta"
+                                :produto/preco     30M
+                                :produto/categoria {:categoria/nome "roupas"
+                                                    :categoria/id   (categoria.model/uuid)}}])
 
-  (def produto-id (-> (produto/find-all2 (d/db conn))
-                      second
-                      first
-                      :produto/id))
-  (pprint (produto/one-produto-by-id (d/db conn) produto-id))
+;insert with lookup ref by uuid
+(produto/insert-produto! conn [{:produto/id        (model/uuid)
+                                :produto/nome      "Xbox One"
+                                :produto/slug      "/xbox-one"
+                                :produto/preco     30M
+                                :produto/categoria [:categoria/id (:categoria/id jogos)]}])
 
-  (produto/atribui-categoria! conn [camera celular notebook] eletronicos))
-
-(pprint (produto/find-all2 (d/db conn)))
-(pprint (produto/find-product-and-category-names (d/db conn)))
-
-(pprint (categoria/find-produto-by-categoria-foward (d/db conn) "eletronicos"))
-(pprint (categoria/find-produto-by-categoria (d/db conn) "jogos"))
-
-(pprint (categoria/find-produto-by-categoria-backward (d/db conn) "eletronicos"))
-
+(produto/find-product-and-category-names (d/db conn))
 ;(db/apaga-banco!)
