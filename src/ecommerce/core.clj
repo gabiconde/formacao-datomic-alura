@@ -37,7 +37,9 @@
 (pprint (produto/find-all2 (d/db conn)))
 (pprint (produto/find-product-and-category-names (d/db conn)))
 
-(pprint (categoria/find-produto-by-categoria (d/db conn) "eletronicos"))
+(pprint (categoria/find-produto-by-categoria-foward (d/db conn) "eletronicos"))
 (pprint (categoria/find-produto-by-categoria (d/db conn) "jogos"))
+
+(pprint (categoria/find-produto-by-categoria-backward (d/db conn) "eletronicos"))
 
 ;(db/apaga-banco!)
