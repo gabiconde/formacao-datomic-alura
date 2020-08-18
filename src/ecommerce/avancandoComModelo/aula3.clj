@@ -1,4 +1,4 @@
-(ns ecommerce.core
+(ns ecommerce.avancandoComModelo.aula3
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
@@ -11,7 +11,8 @@
 
 (def jogos (categoria.model/nova-categoria "jogos"))
 (def eletronicos (categoria.model/nova-categoria "eletronicos"))
-(categoria/insert-categoria! conn [jogos eletronicos])
+
+(pprint @(categoria/insert-categoria! conn [jogos eletronicos]))
 
 (pprint (categoria/todas-as-categorias (d/db conn)))
 
@@ -34,4 +35,4 @@
 
   (produto/atribui-categoria! conn [camera celular notebook] eletronicos))
 
-;(db/apaga-banco)
+;(db/apaga-banco!)

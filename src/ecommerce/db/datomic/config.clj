@@ -10,11 +10,11 @@
                 produto.model/produto-schema
                 categoria.model/categoria-schema))
 
-(defn abre-conexao []
+(defn abre-conexao! []
   (d/create-database db-uri)
   (let [conn (d/connect db-uri)]
     (d/transact conn produto.model/produto-schema)
     conn))
 
-(defn apaga-banco []
+(defn apaga-banco! []
   (d/delete-database db-uri))

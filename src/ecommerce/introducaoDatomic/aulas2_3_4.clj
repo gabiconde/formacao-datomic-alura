@@ -5,7 +5,7 @@
             [ecommerce.produto.model :as model]
             [ecommerce.produto.db.datomic :as produto]))
 
-(def conn (db/abre-conexao))
+(def conn (db/abre-conexao!))
 
 (let [camera (model/novo-produto "Camera" "/camera" 2500.10M)
       celular (model/novo-produto "Celular" "/celular" 34.9M)
@@ -26,4 +26,4 @@
 
 (d/transact conn [{:produto/nome "Calculadora"}])
 
-(db/apaga-banco)
+(db/apaga-banco!)

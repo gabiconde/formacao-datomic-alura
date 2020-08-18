@@ -5,7 +5,7 @@
             [ecommerce.produto.db.datomic :as produto]
             [ecommerce.produto.model :as model]))
 
-(def conn (config/abre-conexao))
+(def conn (config/abre-conexao!))
 
 (let [camera (model/novo-produto "Camera" "/camera" 2500.10M)]
   (d/transact conn [camera]))
@@ -33,4 +33,4 @@
   (pprint @(d/transact conn [[:db/retract id-entity :produto/slug "/celular"]])))
   ;one datom with the value removed)
 
-(config/apaga-banco)
+(config/apaga-banco!)
