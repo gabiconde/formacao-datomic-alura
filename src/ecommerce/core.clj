@@ -34,4 +34,10 @@
 
   (produto/atribui-categoria! conn [camera celular notebook] eletronicos))
 
-;(db/apaga-banco)
+(pprint (produto/find-all2 (d/db conn)))
+(pprint (produto/find-product-and-category-names (d/db conn)))
+
+(pprint (categoria/find-produto-by-categoria (d/db conn) "eletronicos"))
+(pprint (categoria/find-produto-by-categoria (d/db conn) "jogos"))
+
+;(db/apaga-banco!)

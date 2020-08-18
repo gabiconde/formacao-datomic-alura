@@ -84,3 +84,12 @@
 (defn atribui-categoria!
   [conn produtos categoria]
   (d/transact conn (db-adds-produtos produtos categoria)))
+
+(defn find-product-and-category-names
+  [db]
+  (d/q '[:find ?nome-produto ?nome-categoria
+         :keys produto categoria
+         :where [?produto :produto/nome ?nome-produto]
+                [?produto :produto/categoria ?categoria]
+                [?categoria :categoria/nome ?nome-categoria]]
+       db))
