@@ -1,11 +1,15 @@
 (ns ecommerce.categoria.db.datomic
-  (:require [datomic.api :as d]))
+  (:require [datomic.api :as d]
+            [ecommerce.categoria.schema :refer [Categoria]]
+            [ecommerce.categoria.adapter :as adapter]
+            [schema.core :as s]))
 
-(defn todas-as-categorias
+(s/defn todas-as-categorias :- [Categoria]
   [db]
-  (d/q '[:find (pull ?categoria [*])
-         :where [?categoria :categoria/nome]]
-       db))
+  (->> db
+      (d/q '[:find [(pull ?categoria [*]) ...]
+             :where [?categoria :categoria/nome]])
+      adapter/datomic->categoria))
 
 (defn insert-categoria!
   [conn categoria]

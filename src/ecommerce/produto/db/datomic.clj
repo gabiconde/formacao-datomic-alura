@@ -1,5 +1,7 @@
 (ns ecommerce.produto.db.datomic
-  (:require [datomic.api :as d]))
+  (:require [datomic.api :as d]
+            [ecommerce.produto.schema :refer [Produto]]
+            [schema.core :as s]))
 
 ;pull explicit attr by attr
 (defn find-all [db]
@@ -51,8 +53,9 @@
          :where [?produto :produto/tags ?tag]]
        db tag))
 
-(defn insert-produto!
-  ([conn produto]
+(s/defn insert-produto!
+  ([conn
+    produto :- [Produto]]
    @(d/transact conn produto))
 
   ([conn produto ip]
