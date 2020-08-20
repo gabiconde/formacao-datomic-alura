@@ -1,17 +1,19 @@
 (ns ecommerce.produto.db.datomic
   (:require [datomic.api :as d]
             [ecommerce.produto.schema :refer [Produto]]
+            [ecommerce.produto.adapter :as adapter]
             [schema.core :as s]))
 
 ;pull explicit attr by attr
-(defn find-all [db]
+(defn find-all2 [db]
   (d/q '[:find (pull ?entidade [:produto/nome :produto/preco :produto/slug])
          :where [?entidade :produto/nome]] db))
 
-;pull generic return all including the id
-(defn find-all2 [db]
-  (d/q '[:find (pull ?entidade [*])
-         :where [?entidade :produto/nome]] db))
+(s/defn find-all :- [Produto]
+  [db]
+  (adapter/datomic->Produto
+    (d/q '[:find [(pull ?entidade [* {:produto/categoria [*]}]) ...]
+           :where [?entidade :produto/nome]] db)))
 
 (defn find-by-slug
   [db slug]

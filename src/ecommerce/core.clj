@@ -8,6 +8,7 @@
             [ecommerce.produto.schema :refer [Produto]]
             [ecommerce.categoria.schema :refer [Categoria]]
             [ecommerce.categoria.db.datomic :as categoria.datomic]
+            [ecommerce.produto.db.datomic :as produto.datomic]
             [schema.core :as s]))
 
 (db.config/apaga-banco!)
@@ -21,3 +22,4 @@
 
 (db.seed/insert-seeds! conn)
 (pprint (categoria.datomic/todas-as-categorias (d/db conn)))
+(pprint (produto.datomic/find-all (d/db conn)))
