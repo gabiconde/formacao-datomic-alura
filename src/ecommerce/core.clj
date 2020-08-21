@@ -51,3 +51,20 @@
   (pprint (produto.datomic/one-produto-by-id (d/db conn) (:produto/id dama))))
 
 (roda-transacoes [atualiza-preco atualiza-slug])
+
+(defn atualiza-preco-smart []
+  (let [produto {:produto/id    (:produto/id dama)
+                 :produto/preco 900M}]
+    (produto.datomic/upsert-produto! conn [produto])
+    (pprint "Preço Atualizado")
+    produto))
+
+(defn atualiza-slug-smart []
+  (let [produto {:produto/id   (:produto/id dama)
+                 :produto/slug "/dama-top"}]
+    (Thread/sleep 3000)
+    (produto.datomic/upsert-produto! conn [produto])
+    (pprint "Slug Atualizado")
+    produto))
+
+(roda-transacoes [atualiza-preco-smart atualiza-slug-smart])
