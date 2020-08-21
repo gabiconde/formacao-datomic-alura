@@ -15,30 +15,6 @@
     (d/q '[:find [(pull ?entidade [* {:produto/categoria [*]}]) ...]
            :where [?entidade :produto/nome]] db)))
 
-(defn find-by-slug
-  [db slug]
-  (d/q '[:find ?entidade
-         :in $ ?slug-buscado
-         :where [?entidade :produto/slug ?slug-buscado]]
-       db slug))
-;any entity that has the attribute :produto/slug
-
-(defn find-all-slugs
-  [db]
-  (d/q '[:find ?slug
-         :where [_ :produto/slug ?slug]] db))
-;use _ when we don't care about the data
-
-(defn find-price-and-name
-  [db]
-  (d/q '[:find ?nome ?preco
-         ;:keys nome preco ;[{:nome x :preco y}]
-         :keys produto/nome produto/preco ;[#:produto{:nome x :preco y}]
-         :where [?produto :produto/preco ?preco]
-                [?produto :produto/nome ?nome]] db))
-;if the ?produto is no explicit the return will be a cartesian product
-; of all values it found [nome1, preco1] [nome1, preco2] [nome2, preco1] [nome2, preco2]
-
 (defn find-by-price
   [db valor-minimo]
   (d/q '[:find ?nome ?preco
@@ -48,14 +24,7 @@
                 [?produto :produto/nome ?nome]]
        db valor-minimo))
 
-(defn find-by-tag
-  [db tag]
-  (d/q '[:find (pull ?produto [*])
-         :in $ ?tag
-         :where [?produto :produto/tags ?tag]]
-       db tag))
-
-(s/defn insert-produto!
+(s/defn upsert-produto!
   ([conn
     produto :- [Produto]]
    @(d/transact conn produto))
@@ -77,9 +46,11 @@
   (d/pull db '[*] id))
 ;por padrao d/pull busca por db/id
 
-(defn one-produto-by-id
-  [db produto-id]
-  (d/pull db '[*] [:produto/id produto-id]))
+(s/defn one-produto-by-id :- [Produto]
+  [db
+   produto-id :- s/Uuid]
+  (adapter/datomic->Produto
+    (d/pull db '[*] [:produto/id produto-id])))
 
 (defn db-adds-produtos
   [produtos categoria]

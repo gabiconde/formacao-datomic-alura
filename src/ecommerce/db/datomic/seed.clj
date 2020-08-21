@@ -16,5 +16,5 @@
 (defn insert-seeds!
   [conn]
   (categoria/insert-categoria! conn [jogos eletronicos])
-  (produto/insert-produto! conn [camera celular notebook] "127.0.0.1")
+  (produto/upsert-produto! conn [camera celular notebook] "127.0.0.1")
   (produto/atribui-categoria! conn [camera celular notebook] eletronicos))
