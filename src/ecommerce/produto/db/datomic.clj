@@ -11,7 +11,7 @@
 
 (s/defn find-all :- [Produto]
   [db]
-  (adapter/datomic->Produto
+  (adapter/datomic->produto
     (d/q '[:find [(pull ?entidade [* {:produto/categoria [*]}]) ...]
            :where [?entidade :produto/nome]] db)))
 
@@ -49,7 +49,7 @@
 (s/defn one-produto-by-id :- (s/maybe [Produto])
   [db
    produto-id :- s/Uuid]
-  (let [produto (adapter/datomic->Produto (d/pull db '[*] [:produto/id produto-id]))]
+  (let [produto (adapter/datomic->produto (d/pull db '[*] [:produto/id produto-id]))]
     (if (:produto/id produto)
       produto
       nil)))
@@ -128,3 +128,23 @@
          :where [?transacao :tx-data/ip ?ip]
                 [?produto :produto/id _ ?transacao]]
        db ip))
+
+(s/defn todos-produtos-com-estoque :- [Produto]
+  [db]
+  (adapter/datomic->produto
+    (d/q '[:find (pull ?produto [* {:produto/categoria [*]}])
+           :where [?produto :produto/estoque ?estoque]
+                  [(> ?estoque 0)]] db)))
+
+;se busca só um numa query coloque o .
+(s/defn um-produto-com-estoque :- (s/maybe [Produto])
+  [db produto-id]
+  (let [query '[:find (pull ?produto [* {:produto/categoria [*]}]).
+                :in $ ?id
+                :where [?produto :produto/id ?id]
+                       [?produto :produto/estoque ?estoque]
+                       [(> ?estoque 0)]]
+        produto (adapter/datomic->produto (d/q query db produto-id))]
+    (if (:produto/id produto)
+      produto
+      nil)))

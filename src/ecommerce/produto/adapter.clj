@@ -9,6 +9,6 @@
     (dissoc entidate :db/id)
     entidate))
 
-(s/defn datomic->Produto :- [schema/Produto]
+(s/defn datomic->produto :- [schema/Produto]
   [entidades]
   (walk/prewalk remove-nested-db-id entidades))

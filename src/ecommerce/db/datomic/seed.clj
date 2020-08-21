@@ -9,9 +9,9 @@
 (def eletronicos (categoria.model/nova-categoria "eletronicos"))
 
 ;produtos
-(def camera (produto.model/novo-produto "Camera" "/camera" 2500.10M))
-(def celular (produto.model/novo-produto "Celular" "/celular" 34.9M))
-(def notebook (produto.model/novo-produto "Notebook" "/notebook" 5648.90M))
+(def camera (produto.model/novo-produto "Camera" "/camera" 2500.10M 5))
+(def celular (produto.model/novo-produto "Celular" "/celular" 34.9M 56))
+(def notebook (produto.model/novo-produto "Notebook" "/notebook" 5648.90M 0))
 
 (defn insert-seeds!
   [conn]
