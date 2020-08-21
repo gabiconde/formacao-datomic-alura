@@ -46,11 +46,21 @@
   (d/pull db '[*] id))
 ;por padrao d/pull busca por db/id
 
-(s/defn one-produto-by-id :- [Produto]
+(s/defn one-produto-by-id :- (s/maybe [Produto])
   [db
    produto-id :- s/Uuid]
-  (adapter/datomic->Produto
-    (d/pull db '[*] [:produto/id produto-id])))
+  (let [produto (adapter/datomic->Produto (d/pull db '[*] [:produto/id produto-id]))]
+    (if (:produto/id produto)
+      produto
+      nil)))
+
+(s/defn one-produto-by-id! :- [Produto]
+  [db
+   produto-id :- s/Uuid]
+  (let [produto (one-produto-by-id db produto-id)]
+    (when (nil? produto)
+      (throw (ex-info "Não encontrei uma entidade" {:type :errors/not-found :id produto-id})))
+   produto))
 
 (defn db-adds-produtos
   [produtos categoria]
