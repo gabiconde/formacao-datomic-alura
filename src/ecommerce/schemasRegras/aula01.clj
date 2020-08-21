@@ -1,4 +1,4 @@
-(ns ecommerce.core
+(ns ecommerce.schemasRegras.aula01
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db.config]

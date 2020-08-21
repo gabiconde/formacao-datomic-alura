@@ -1,39 +1,19 @@
 (ns ecommerce.produto.db.datomic
-  (:require [datomic.api :as d]))
+  (:require [datomic.api :as d]
+            [ecommerce.produto.schema :refer [Produto]]
+            [ecommerce.produto.adapter :as adapter]
+            [schema.core :as s]))
 
 ;pull explicit attr by attr
-(defn find-all [db]
+(defn find-all2 [db]
   (d/q '[:find (pull ?entidade [:produto/nome :produto/preco :produto/slug])
          :where [?entidade :produto/nome]] db))
 
-;pull generic return all including the id
-(defn find-all2 [db]
-  (d/q '[:find (pull ?entidade [*])
-         :where [?entidade :produto/nome]] db))
-
-(defn find-by-slug
-  [db slug]
-  (d/q '[:find ?entidade
-         :in $ ?slug-buscado
-         :where [?entidade :produto/slug ?slug-buscado]]
-       db slug))
-;any entity that has the attribute :produto/slug
-
-(defn find-all-slugs
+(s/defn find-all :- [Produto]
   [db]
-  (d/q '[:find ?slug
-         :where [_ :produto/slug ?slug]] db))
-;use _ when we don't care about the data
-
-(defn find-price-and-name
-  [db]
-  (d/q '[:find ?nome ?preco
-         ;:keys nome preco ;[{:nome x :preco y}]
-         :keys produto/nome produto/preco ;[#:produto{:nome x :preco y}]
-         :where [?produto :produto/preco ?preco]
-                [?produto :produto/nome ?nome]] db))
-;if the ?produto is no explicit the return will be a cartesian product
-; of all values it found [nome1, preco1] [nome1, preco2] [nome2, preco1] [nome2, preco2]
+  (adapter/datomic->produto
+    (d/q '[:find [(pull ?entidade [* {:produto/categoria [*]}]) ...]
+           :where [?entidade :produto/nome]] db)))
 
 (defn find-by-price
   [db valor-minimo]
@@ -44,15 +24,9 @@
                 [?produto :produto/nome ?nome]]
        db valor-minimo))
 
-(defn find-by-tag
-  [db tag]
-  (d/q '[:find (pull ?produto [*])
-         :in $ ?tag
-         :where [?produto :produto/tags ?tag]]
-       db tag))
-
-(defn insert-produto!
-  ([conn produto]
+(s/defn upsert-produto!
+  ([conn
+    produto :- [Produto]]
    @(d/transact conn produto))
 
   ([conn produto ip]
@@ -72,9 +46,21 @@
   (d/pull db '[*] id))
 ;por padrao d/pull busca por db/id
 
-(defn one-produto-by-id
-  [db produto-id]
-  (d/pull db '[*] [:produto/id produto-id]))
+(s/defn one-produto-by-id :- (s/maybe [Produto])
+  [db
+   produto-id :- s/Uuid]
+  (let [produto (adapter/datomic->produto (d/pull db '[*] [:produto/id produto-id]))]
+    (if (:produto/id produto)
+      produto
+      nil)))
+
+(s/defn one-produto-by-id! :- [Produto]
+  [db
+   produto-id :- s/Uuid]
+  (let [produto (one-produto-by-id db produto-id)]
+    (when (nil? produto)
+      (throw (ex-info "Não encontrei uma entidade" {:type :errors/not-found :id produto-id})))
+   produto))
 
 (defn db-adds-produtos
   [produtos categoria]
@@ -142,3 +128,33 @@
          :where [?transacao :tx-data/ip ?ip]
                 [?produto :produto/id _ ?transacao]]
        db ip))
+
+(def regras
+  '[
+    [(estoque ?produto ?estoque)
+     [?produto :produto/estoque ?estoque]]
+    [(estoque ?produto ?estoque)
+     [?produto :produto/digital true]
+     [(ground 100) ?estoque]]
+    [(pode-vender? ?produto)
+     (estoque ?produto ?estoque)
+     [(> ?estoque 0)]]])
+
+(s/defn todos-produtos-com-estoque :- [Produto]
+  [db]
+  (adapter/datomic->produto
+    (d/q '[:find (pull ?produto [* {:produto/categoria [*]}])
+           :in $ %
+           :where (pode-vender? ?produto)] db regras)))
+
+;se busca só um numa query coloque o .
+(s/defn um-produto-com-estoque :- (s/maybe [Produto])
+  [db produto-id]
+  (let [query '[:find (pull ?produto [* {:produto/categoria [*]}]).
+                :in $ % ?id
+                :where [?produto :produto/id ?id]
+                       (pode-vender? ?produto ?estoque)]
+        produto (adapter/datomic->produto (d/q query db regras produto-id))]
+    (if (:produto/id produto)
+      produto
+      nil)))

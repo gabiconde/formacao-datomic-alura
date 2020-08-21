@@ -17,12 +17,12 @@
 (def celular (model/novo-produto "Celular" "/celular" 34.9M))
 (def calculadora {:produto/nome "Calculadora"})
 (def notebook (model/novo-produto "Notebook" "/notebook" 5648.90M))
-(produto/insert-produto! conn [camera celular calculadora notebook])
+(produto/upsert-produto! conn [camera celular calculadora notebook])
 
 (produto/atribui-categoria! conn [camera celular notebook] eletronicos)
 
 ;insert with nested map
-(produto/insert-produto! conn [{:produto/id        (model/uuid)
+(produto/upsert-produto! conn [{:produto/id        (model/uuid)
                                 :produto/nome      "Camiseta"
                                 :produto/slug      "/camiseta"
                                 :produto/preco     30M
@@ -30,7 +30,7 @@
                                                     :categoria/id   (categoria.model/uuid)}}])
 
 ;insert with lookup ref by uuid
-(produto/insert-produto! conn [{:produto/id        (model/uuid)
+(produto/upsert-produto! conn [{:produto/id        (model/uuid)
                                 :produto/nome      "Xbox One"
                                 :produto/slug      "/xbox-one"
                                 :produto/preco     30M

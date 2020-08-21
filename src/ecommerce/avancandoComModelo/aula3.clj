@@ -21,7 +21,7 @@
       calculadora {:produto/nome "Calculadora"}
       notebook (model/novo-produto "Notebook" "/notebook" 5648.90M)]
 
-  (pprint (produto/insert-produto! conn [camera celular calculadora notebook]))
+  (pprint (produto/upsert-produto! conn [camera celular calculadora notebook]))
   (def produto-db-id (-> (produto/find-all2 (d/db conn))
                          ffirst
                          :db/id))

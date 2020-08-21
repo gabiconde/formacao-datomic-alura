@@ -23,6 +23,12 @@
                      {:db/ident       :produto/categoria
                       :db/valueType   :db.type/ref
                       :db/cardinality :db.cardinality/one}
+                     {:db/ident       :produto/estoque
+                      :db/valueType   :db.type/long
+                      :db/cardinality :db.cardinality/one}
+                     {:db/ident       :produto/digital
+                      :db/valueType   :db.type/boolean
+                      :db/cardinality :db.cardinality/one}
 
                      {:db/ident       :categoria/nome
                       :db/valueType   :db.type/string
@@ -40,10 +46,12 @@
   (UUID/randomUUID))
 
 (defn novo-produto
-  ([nome slug preco]
-   (novo-produto (uuid) nome slug preco))
-  ([uuid nome slug preco]
-   {:produto/id    uuid
-    :produto/nome  nome
-    :produto/slug  slug
-    :produto/preco preco}))
+  ([nome slug preco estoque]
+   (novo-produto (uuid) nome slug preco estoque))
+  ([uuid nome slug preco estoque]
+   {:produto/id      uuid
+    :produto/nome    nome
+    :produto/slug    slug
+    :produto/preco   preco
+    :produto/estoque estoque
+    :produto/digital false}))

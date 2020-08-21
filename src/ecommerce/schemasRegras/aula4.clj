@@ -1,10 +1,8 @@
-(ns ecommerce.core
+(ns ecommerce.schemasRegras.aula4
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db.config]
             [ecommerce.db.datomic.seed :as db.seed]
-            [ecommerce.produto.model :as produto.model]
-            [ecommerce.categoria.model :as categoria.model]
             [ecommerce.produto.schema :refer [Produto]]
             [ecommerce.categoria.schema :refer [Categoria]]
             [ecommerce.categoria.db.datomic :as categoria.datomic]
@@ -14,12 +12,10 @@
 (db.config/apaga-banco!)
 (def conn (db.config/abre-conexao!))
 
-(def jogos (categoria.model/nova-categoria "jogos"))
-(def notebook (produto.model/novo-produto "Notebook" "/notebook" 5648.90M))
-
-(pprint (s/validate Categoria jogos))
-(pprint (s/validate Produto notebook))
-
 (db.seed/insert-seeds! conn)
 (pprint (categoria.datomic/todas-as-categorias (d/db conn)))
-(pprint (produto.datomic/find-all (d/db conn)))
+(def produtos (produto.datomic/find-all (d/db conn)))
+
+(pprint (produto.datomic/todos-produtos-com-estoque (d/db conn)))
+(pprint (produto.datomic/um-produto-com-estoque (d/db conn) (:produto/id (first produtos))))
+(pprint (produto.datomic/um-produto-com-estoque (d/db conn) (:produto/id (second produtos))))
