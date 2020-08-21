@@ -26,6 +26,9 @@
                      {:db/ident       :produto/estoque
                       :db/valueType   :db.type/long
                       :db/cardinality :db.cardinality/one}
+                     {:db/ident       :produto/digital
+                      :db/valueType   :db.type/boolean
+                      :db/cardinality :db.cardinality/one}
 
                      {:db/ident       :categoria/nome
                       :db/valueType   :db.type/string
@@ -50,4 +53,5 @@
     :produto/nome    nome
     :produto/slug    slug
     :produto/preco   preco
-    :produto/estoque estoque}))
+    :produto/estoque estoque
+    :produto/digital false}))

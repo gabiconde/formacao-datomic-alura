@@ -9,4 +9,5 @@
    (s/optional-key :produto/preco)         BigDecimal
    (s/optional-key :produto/palavra-chave) [s/Str]
    (s/optional-key :produto/categoria)     Categoria
-   (s/optional-key :produto/estoque)       s/Int})
+   (s/optional-key :produto/estoque)       s/Int
+   (s/optional-key :produto/digital)       s/Bool})

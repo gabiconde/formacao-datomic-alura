@@ -129,22 +129,32 @@
                 [?produto :produto/id _ ?transacao]]
        db ip))
 
+(def regras
+  '[
+    [(estoque ?produto ?estoque)
+     [?produto :produto/estoque ?estoque]]
+    [(estoque ?produto ?estoque)
+     [?produto :produto/digital true]
+     [(ground 100) ?estoque]]
+    [(pode-vender? ?produto)
+     (estoque ?produto ?estoque)
+     [(> ?estoque 0)]]])
+
 (s/defn todos-produtos-com-estoque :- [Produto]
   [db]
   (adapter/datomic->produto
     (d/q '[:find (pull ?produto [* {:produto/categoria [*]}])
-           :where [?produto :produto/estoque ?estoque]
-                  [(> ?estoque 0)]] db)))
+           :in $ %
+           :where (pode-vender? ?produto)] db regras)))
 
 ;se busca só um numa query coloque o .
 (s/defn um-produto-com-estoque :- (s/maybe [Produto])
   [db produto-id]
   (let [query '[:find (pull ?produto [* {:produto/categoria [*]}]).
-                :in $ ?id
+                :in $ % ?id
                 :where [?produto :produto/id ?id]
-                       [?produto :produto/estoque ?estoque]
-                       [(> ?estoque 0)]]
-        produto (adapter/datomic->produto (d/q query db produto-id))]
+                       (pode-vender? ?produto ?estoque)]
+        produto (adapter/datomic->produto (d/q query db regras produto-id))]
     (if (:produto/id produto)
       produto
       nil)))
