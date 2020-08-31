@@ -6,7 +6,7 @@
 
 ;pull explicit attr by attr
 (defn find-all2 [db]
-  (d/q '[:find (pull ?entidade [:produto/nome :produto/preco :produto/slug])
+  (d/q '[:find (pull ?entidade [:produto/id :produto/nome :produto/preco :produto/slug])
          :where [?entidade :produto/nome]] db))
 
 (s/defn find-all :- [Produto]
@@ -182,3 +182,10 @@
            :where (produto-categoria ?produto ?nome-categoria)
                   [?produto :produto/digital ?digital?]]
          db regras categorias digital?)))
+
+(s/defn atualiza-preco!
+  [conn
+   produto-id :- s/Uuid
+   antigo :- BigDecimal
+   novo :- BigDecimal]
+  (d/transact conn [[:db/cas [:produto/id produto-id] :produto/preco antigo novo]]))
