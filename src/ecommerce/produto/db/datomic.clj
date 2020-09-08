@@ -1,7 +1,9 @@
 (ns ecommerce.produto.db.datomic
+  (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.produto.schema :refer [Produto]]
             [ecommerce.produto.adapter :as adapter]
+            [clojure.set :as cset]
             [schema.core :as s]))
 
 ;pull explicit attr by attr
@@ -189,3 +191,17 @@
    antigo :- BigDecimal
    novo :- BigDecimal]
   (d/transact conn [[:db/cas [:produto/id produto-id] :produto/preco antigo novo]]))
+
+(s/defn atualiza-produto!
+  [conn
+   antigo :- Produto
+   novo :- Produto]
+  (let [produto-id (:produto/id antigo)
+        atributos (-> (cset/intersection (set (keys antigo))
+                                         (set (keys novo)))
+                      (disj :produto/id))
+        txs (map
+              (fn [atributo]
+                [:db/cas [:produto/id produto-id] atributo (get antigo atributo) (get novo atributo)])
+              atributos)]
+    (d/transact conn txs)))
