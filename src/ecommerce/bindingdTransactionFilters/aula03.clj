@@ -16,3 +16,9 @@
 
 (pprint (produto.datomic/adiciona-variacao! conn (:produto/id primeiro-produto) "digital pass" 40M))
 (pprint (produto.datomic/adiciona-variacao! conn (:produto/id primeiro-produto) "digital pass 4 anos" 80M))
+
+(pprint (d/q '[:find (pull ?produto [*])
+               :where [?produto :produto/nome]]
+             (d/db conn)))
+
+(pprint (produto.datomic/find-all (d/db conn)))

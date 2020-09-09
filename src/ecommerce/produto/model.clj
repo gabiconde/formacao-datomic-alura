@@ -31,6 +31,7 @@
                       :db/cardinality :db.cardinality/one}
                      {:db/ident       :produto/variacao
                       :db/valueType   :db.type/ref
+                      :db/isComponent true
                       :db/cardinality :db.cardinality/many}
 
                      {:db/ident       :categoria/nome
