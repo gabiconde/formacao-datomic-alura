@@ -3,6 +3,7 @@
   (:require [datomic.api :as d]
             [ecommerce.produto.schema :refer [Produto]]
             [ecommerce.produto.adapter :as adapter]
+            [ecommerce.produto.model :as model]
             [clojure.set :as cset]
             [schema.core :as s]))
 
@@ -205,3 +206,16 @@
                 [:db/cas [:produto/id produto-id] atributo (get antigo atributo) (get novo atributo)])
               atributos)]
     (d/transact conn txs)))
+
+(s/defn adiciona-variacao!
+  [conn
+   produto-id :- s/Uuid
+   variacao :- s/Str
+   preco :- BigDecimal]
+  (d/transact conn [{:db/id "variacao-temp"
+                     :variacao/nome variacao
+                     :variacao/preco preco
+                     :variacao/id  (model/uuid)}
+
+                    {:produto/id produto-id
+                     :produto/variacao "variacao-temp"}]))
