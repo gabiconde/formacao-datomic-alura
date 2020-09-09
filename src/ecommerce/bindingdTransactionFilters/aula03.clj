@@ -22,3 +22,6 @@
              (d/db conn)))
 
 (pprint (produto.datomic/find-all (d/db conn)))
+
+;retract Entity apaga os componentes relacionado da entidade tambem. As variacoes
+(pprint @(produto.datomic/apaga-produto! conn (:produto/id primeiro-produto)))

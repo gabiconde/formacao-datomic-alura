@@ -219,3 +219,8 @@
 
                     {:produto/id produto-id
                      :produto/variacao "variacao-temp"}]))
+
+(s/defn apaga-produto!
+  [conn
+   produto-id :- s/Uuid]
+  (d/transact conn [[:db/retractEntity [:produto/id produto-id]]]))
