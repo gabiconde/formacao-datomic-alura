@@ -33,6 +33,10 @@
                       :db/valueType   :db.type/ref
                       :db/isComponent true
                       :db/cardinality :db.cardinality/many}
+                     {:db/ident       :produto/visualizacoes
+                      :db/valueType   :db.type/long
+                      :db/cardinality :db.cardinality/one
+                      :db/noHistory   true}
 
                      {:db/ident       :categoria/nome
                       :db/valueType   :db.type/string

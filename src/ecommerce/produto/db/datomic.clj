@@ -224,3 +224,23 @@
   [conn
    produto-id :- s/Uuid]
   (d/transact conn [[:db/retractEntity [:produto/id produto-id]]]))
+
+
+; o . no find retorna um unico valor ou nil
+(s/defn visualizacoes
+  [db
+   produto-id :- s/Uuid]
+  (or (d/q '[:find ?visualizacoes .
+             :in $ ?id
+             :where [?p :produto/id ?id]
+                    [?p :produto/visualizacoes ?visualizacoes]]
+           db produto-id)
+      0))
+
+(s/defn visualizacao!
+  [conn
+   produto-id :- s/Uuid]
+  (let [ate-agora (visualizacoes (d/db conn) produto-id)
+        novo-valor (inc ate-agora)]
+    (d/transact conn [{:produto/id           produto-id
+                       :produto/visualizacoes novo-valor}])))

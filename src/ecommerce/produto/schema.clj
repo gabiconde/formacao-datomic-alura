@@ -16,4 +16,5 @@
    (s/optional-key :produto/categoria)     Categoria
    (s/optional-key :produto/estoque)       s/Int
    (s/optional-key :produto/digital)       s/Bool
-   (s/optional-key :produto/variacao)      [Variacao]})
+   (s/optional-key :produto/variacao)      [Variacao]
+   (s/optional-key :produto/visualizacoes) s/Int})
