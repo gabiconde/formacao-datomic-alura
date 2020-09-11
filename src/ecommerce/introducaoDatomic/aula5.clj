@@ -3,7 +3,7 @@
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
             [ecommerce.produto.model :as model]
-            [ecommerce.produto.db.datomic :as produto]))
+            [ecommerce.produto.db.produto :as produto]))
 
 (def conn (db/abre-conexao!))
 

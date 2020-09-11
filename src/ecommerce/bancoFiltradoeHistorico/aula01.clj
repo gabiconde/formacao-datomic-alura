@@ -1,4 +1,4 @@
-(ns ecommerce.bindingdTransactionFilters.aula04
+(ns ecommerce.bancoFiltradoeHistorico.aula01
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db.config]
@@ -11,10 +11,5 @@
 (def conn (db.config/abre-conexao!))
 
 (db.seed/insert-seeds! conn)
-(def primeiro-produto (last (produto.datomic/find-all (d/db conn))))
-(pprint primeiro-produto)
+(pprint (produto.datomic/find-all (d/db conn)))
 
-(dotimes [n 10]
-  (pprint @(produto.datomic/visualizacao! conn (:produto/id primeiro-produto))))
-
-(pprint (produto.datomic/one-produto-by-id (d/db conn) (:produto/id primeiro-produto)))

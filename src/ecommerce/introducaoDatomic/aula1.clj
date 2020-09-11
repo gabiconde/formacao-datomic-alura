@@ -2,7 +2,7 @@
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as config]
-            [ecommerce.produto.db.datomic :as produto]
+            [ecommerce.produto.db.produto :as produto]
             [ecommerce.produto.model :as model]))
 
 (def conn (config/abre-conexao!))

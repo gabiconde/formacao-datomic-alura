@@ -3,7 +3,7 @@
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
             [ecommerce.produto.model :as model]
-            [ecommerce.produto.db.datomic :as produto]))
+            [ecommerce.produto.db.produto :as produto]))
 
 (def conn (db/abre-conexao!))
 
@@ -15,11 +15,11 @@
   (pprint @(d/transact conn [camera celular calculadora notebook]))
   (pprint (produto/find-by-price (d/db conn) 1000))
 
-  (produto/update-produto! conn 17592186045436 :produto/tags "flash")
-  (produto/update-produto! conn 17592186045436 :produto/tags "lente 18mm")
+  (produto/update! conn 17592186045436 :produto/tags "flash")
+  (produto/update! conn 17592186045436 :produto/tags "lente 18mm")
 
-  (produto/update-produto! conn 17592186045437 :produto/tags "android 10")
-  (produto/update-produto! conn 17592186045438 :produto/tags "flash")
+  (produto/update! conn 17592186045437 :produto/tags "android 10")
+  (produto/update! conn 17592186045438 :produto/tags "flash")
 
   (pprint (produto/find-by-tag (d/db conn) "flash")))
 

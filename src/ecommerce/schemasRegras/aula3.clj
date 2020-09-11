@@ -7,8 +7,8 @@
             [ecommerce.categoria.model :as categoria.model]
             [ecommerce.produto.schema :refer [Produto]]
             [ecommerce.categoria.schema :refer [Categoria]]
-            [ecommerce.categoria.db.datomic :as categoria.datomic]
-            [ecommerce.produto.db.datomic :as produto.datomic]
+            [ecommerce.categoria.db.categoria :as categoria.datomic]
+            [ecommerce.produto.db.produto :as produto.datomic]
             [schema.core :as s]))
 
 (db.config/apaga-banco!)
@@ -21,7 +21,7 @@
 (pprint (s/validate Produto notebook))
 
 (db.seed/insert-seeds! conn)
-(pprint (categoria.datomic/todas-as-categorias (d/db conn)))
+(pprint (categoria.datomic/todas (d/db conn)))
 (pprint (produto.datomic/find-all (d/db conn)))
 
 ;find with s/maybe should return nil if the product do not exists

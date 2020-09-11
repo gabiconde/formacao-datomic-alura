@@ -1,4 +1,4 @@
-(ns ecommerce.produto.db.datomic
+(ns ecommerce.produto.db.produto
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.produto.schema :refer [Produto]]
@@ -7,7 +7,6 @@
             [clojure.set :as cset]
             [schema.core :as s]))
 
-;pull explicit attr by attr
 (defn find-all2 [db]
   (d/q '[:find (pull ?entidade [:produto/id :produto/nome :produto/preco :produto/slug])
          :where [?entidade :produto/nome]] db))
@@ -27,7 +26,7 @@
                 [?produto :produto/nome ?nome]]
        db valor-minimo))
 
-(s/defn upsert-produto!
+(s/defn upsert!
   ([conn
     produto :- [Produto]]
    @(d/transact conn produto))
@@ -36,13 +35,9 @@
    (let [db-add-ip [:db/add "datomic.tx" :tx-data/ip ip]]
      @(d/transact conn (conj produto db-add-ip)))))
 
-(defn update-produto!
+(defn update!
   [conn id-entity attr value]
   @(d/transact conn [[:db/add id-entity attr value]]))
-
-(defn remove-produto
-  [conn id-entity attr value]
-  @(d/transact conn [[:db/retract id-entity attr value]]))
 
 (defn one-produto
   [db id]
@@ -106,7 +101,7 @@
        db))
 
 ;nested query
-(defn produto-mais-caro
+(defn mais-caro
   [db]
   (d/q '[:find (pull ?produto [*])
          :where [(q '[:find (max ?preco)
@@ -115,7 +110,7 @@
                 [?produto :produto/preco ?preco]]
        db))
 
-(defn produto-mais-barato
+(defn mais-barato
   [db]
   (d/q '[:find (pull ?produto [*])
          :where [(q '[:find (min ?preco)
@@ -193,7 +188,7 @@
    novo :- BigDecimal]
   (d/transact conn [[:db/cas [:produto/id produto-id] :produto/preco antigo novo]]))
 
-(s/defn atualiza-produto!
+(s/defn atualiza!
   [conn
    antigo :- Produto
    novo :- Produto]
@@ -220,7 +215,7 @@
                     {:produto/id produto-id
                      :produto/variacao "variacao-temp"}]))
 
-(s/defn apaga-produto!
+(s/defn apaga!
   [conn
    produto-id :- s/Uuid]
   (d/transact conn [[:db/retractEntity [:produto/id produto-id]]]))
