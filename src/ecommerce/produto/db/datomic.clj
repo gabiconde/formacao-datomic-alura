@@ -1,12 +1,15 @@
 (ns ecommerce.produto.db.datomic
+  (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.produto.schema :refer [Produto]]
             [ecommerce.produto.adapter :as adapter]
+            [ecommerce.produto.model :as model]
+            [clojure.set :as cset]
             [schema.core :as s]))
 
 ;pull explicit attr by attr
 (defn find-all2 [db]
-  (d/q '[:find (pull ?entidade [:produto/nome :produto/preco :produto/slug])
+  (d/q '[:find (pull ?entidade [:produto/id :produto/nome :produto/preco :produto/slug])
          :where [?entidade :produto/nome]] db))
 
 (s/defn find-all :- [Produto]
@@ -138,7 +141,11 @@
      [(ground 100) ?estoque]]
     [(pode-vender? ?produto)
      (estoque ?produto ?estoque)
-     [(> ?estoque 0)]]])
+     [(> ?estoque 0)]]
+    [(produto-categoria ?produto ?nome-categoria)
+     [?categoria :categoria/nome ?nome-categoria]
+     [?produto :produto/categoria ?categoria]]])
+
 
 (s/defn todos-produtos-com-estoque :- [Produto]
   [db]
@@ -158,3 +165,87 @@
     (if (:produto/id produto)
       produto
       nil)))
+
+(s/defn todos-produtos-pela-categoria :- [Produto]
+  [db
+   categorias :- [s/Str]]
+  (adapter/datomic->produto
+    (d/q '[:find (pull ?produto [* {:produto/categoria [*]}])
+           :in $ % [?nome-categoria ...]
+           :where (produto-categoria ?produto ?nome-categoria)]
+         db regras categorias)))
+
+(s/defn todos-produtos-pela-categoria-e-digital :- [Produto]
+  [db
+   categorias :- [s/Str]
+   digital? :- s/Bool]
+  (adapter/datomic->produto
+    (d/q '[:find (pull ?produto [* {:produto/categoria [*]}])
+           :in $ % [?nome-categoria ...] ?digital?
+           :where (produto-categoria ?produto ?nome-categoria)
+                  [?produto :produto/digital ?digital?]]
+         db regras categorias digital?)))
+
+(s/defn atualiza-preco!
+  [conn
+   produto-id :- s/Uuid
+   antigo :- BigDecimal
+   novo :- BigDecimal]
+  (d/transact conn [[:db/cas [:produto/id produto-id] :produto/preco antigo novo]]))
+
+(s/defn atualiza-produto!
+  [conn
+   antigo :- Produto
+   novo :- Produto]
+  (let [produto-id (:produto/id antigo)
+        atributos (-> (cset/intersection (set (keys antigo))
+                                         (set (keys novo)))
+                      (disj :produto/id))
+        txs (map
+              (fn [atributo]
+                [:db/cas [:produto/id produto-id] atributo (get antigo atributo) (get novo atributo)])
+              atributos)]
+    (d/transact conn txs)))
+
+(s/defn adiciona-variacao!
+  [conn
+   produto-id :- s/Uuid
+   variacao :- s/Str
+   preco :- BigDecimal]
+  (d/transact conn [{:db/id "variacao-temp"
+                     :variacao/nome variacao
+                     :variacao/preco preco
+                     :variacao/id  (model/uuid)}
+
+                    {:produto/id produto-id
+                     :produto/variacao "variacao-temp"}]))
+
+(s/defn apaga-produto!
+  [conn
+   produto-id :- s/Uuid]
+  (d/transact conn [[:db/retractEntity [:produto/id produto-id]]]))
+
+
+; o . no find retorna um unico valor ou nil
+(s/defn visualizacoes
+  [db
+   produto-id :- s/Uuid]
+  (or (d/q '[:find ?visualizacoes .
+             :in $ ?id
+             :where [?p :produto/id ?id]
+                    [?p :produto/visualizacoes ?visualizacoes]]
+           db produto-id)
+      0))
+
+#_(s/defn visualizacao!
+    [conn
+     produto-id :- s/Uuid]
+    (let [ate-agora (visualizacoes (d/db conn) produto-id)
+          novo-valor (inc ate-agora)]
+      (d/transact conn [{:produto/id           produto-id
+                         :produto/visualizacoes novo-valor}])))
+
+(s/defn visualizacao!
+  [conn
+   produto-id :- s/Uuid]
+  (d/transact conn [[:incrementa-visu produto-id]]))
