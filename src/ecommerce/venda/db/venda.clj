@@ -11,3 +11,15 @@
     (d/transact conn [(assoc nova-venda
                         :venda/produto [:produto/id produto-id])])
     nova-venda))
+
+(s/defn custo
+  [db
+   venda-id :- s/Uuid]
+  (d/q '[:find ?preco-por-produto .
+         :in $ ?id
+         :where [?venda :venda/id ?id]
+                [?venda :venda/quantidade ?qtd]
+                [?venda :venda/produto ?produto]
+                [?produto :produto/preco ?preco]
+                [(* ?preco ?qtd) ?preco-por-produto]]
+       db venda-id))
