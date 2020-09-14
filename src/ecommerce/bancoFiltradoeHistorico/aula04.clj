@@ -22,7 +22,14 @@
 (pprint @(db.venda/remove! conn venda-id))
 
 (pprint (count (db.venda/todas-nao-canceladas (d/db conn))))
-
 (pprint (count (db.venda/todas (d/db conn))))
-
 (pprint (count (db.venda/todas-canceladas (d/db conn))))
+
+(pprint (db.produto/upsert! conn [{:produto/id    (:produto/id produto)
+                                   :produto/preco 100M}]))
+(pprint (db.produto/upsert! conn [{:produto/id    (:produto/id produto)
+                                   :produto/preco 60M}]))
+(pprint (db.produto/upsert! conn [{:produto/id    (:produto/id produto)
+                                   :produto/preco 378M}]))
+
+(pprint (db.produto/historico-de-precos (d/db conn) (:produto/id produto)))
