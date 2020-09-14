@@ -1,4 +1,4 @@
-(ns ecommerce.bancoFiltradoeHistorico.aula01e02
+(ns ecommerce.bancoFiltradoeHistorico.aula01e02e03
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db.config]
