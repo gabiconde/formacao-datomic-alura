@@ -1,4 +1,4 @@
-(ns ecommerce.bancoFiltradoeHistorico.aula01e02e03
+(ns ecommerce.bancoFiltradoeHistorico.aula04
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db.config]
@@ -16,13 +16,13 @@
 
 (def venda1 (db.venda/insert! conn (:produto/id produto) 3))
 (def venda2 (db.venda/insert! conn (:produto/id produto) 1))
+(def venda3 (db.venda/insert! conn (:produto/id produto) 67))
 (def venda-id (:venda/id venda1))
 
-(pprint (db.venda/custo (d/db conn) venda-id))
-(pprint (db.venda/custo (d/db conn) (:venda/id venda2)))
+(pprint @(db.venda/remove! conn venda-id))
 
-(pprint (db.produto/upsert! conn [{:produto/id    (:produto/id produto)
-                                   :produto/preco 100M}]))
+(pprint (count (db.venda/todas-nao-canceladas (d/db conn))))
 
-(pprint (db.venda/custo (d/db conn) venda-id))
-(pprint (db.venda/custo (d/db conn) (:venda/id venda2)))
+(pprint (count (db.venda/todas (d/db conn))))
+
+(pprint (count (db.venda/todas-canceladas (d/db conn))))
