@@ -48,6 +48,9 @@
                      {:db/ident       :venda/quantidade
                       :db/valueType   :db.type/long
                       :db/cardinality :db.cardinality/one}
+                     {:db/ident       :venda/status
+                      :db/valueType   :db.type/string
+                      :db/cardinality :db.cardinality/one}
 
                      {:db/ident       :categoria/nome
                       :db/valueType   :db.type/string

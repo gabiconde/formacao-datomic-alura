@@ -8,4 +8,5 @@
   ([quantidade] (nova-venda quantidade (uuid)))
   ([quantidade id]
    {:venda/quantidade quantidade
-    :venda/id id}))
+    :venda/id         id
+    :venda/status     "nova"}))
