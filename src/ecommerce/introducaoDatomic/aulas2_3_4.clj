@@ -3,7 +3,7 @@
   (:require [datomic.api :as d]
             [ecommerce.db.datomic.config :as db]
             [ecommerce.produto.model :as model]
-            [ecommerce.produto.db.datomic :as produto]))
+            [ecommerce.produto.db.produto :as produto]))
 
 (def conn (db/abre-conexao!))
 
@@ -13,7 +13,7 @@
       id-entity (-> resultado :tempids vals first)]
 
   (pprint resultado)
-  (pprint (produto/update-produto! conn id-entity :produto/preco 23.0M))
+  (pprint (produto/update! conn id-entity :produto/preco 23.0M))
   ;(pprint (produto/remove conn id-entity :produto/slug "/celular"))
 
   (d/transact conn [camera]))

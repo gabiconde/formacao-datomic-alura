@@ -1,8 +1,8 @@
 (ns ecommerce.db.datomic.seed
-  (:require [ecommerce.produto.db.datomic :as produto]
+  (:require [ecommerce.produto.db.produto :as produto]
             [ecommerce.produto.model :as produto.model]
             [ecommerce.categoria.model :as categoria.model]
-            [ecommerce.categoria.db.datomic :as categoria]))
+            [ecommerce.categoria.db.categoria :as categoria]))
 
 ;categorias
 (def jogos (categoria.model/nova-categoria "jogos"))
@@ -16,6 +16,6 @@
 
 (defn insert-seeds!
   [conn]
-  (categoria/insert-categoria! conn [jogos eletronicos])
-  (produto/upsert-produto! conn [camera celular notebook cod] "127.0.0.1")
+  (categoria/insert! conn [jogos eletronicos])
+  (produto/upsert! conn [camera celular notebook cod] "127.0.0.1")
   (produto/atribui-categoria! conn [camera celular notebook cod] eletronicos))

@@ -5,7 +5,7 @@
             [ecommerce.db.datomic.seed :as db.seed]
             [ecommerce.produto.schema :refer [Produto]]
             [ecommerce.categoria.schema :refer [Categoria]]
-            [ecommerce.produto.db.datomic :as produto.datomic]))
+            [ecommerce.produto.db.produto :as produto.datomic]))
 
 (db.config/apaga-banco!)
 (def conn (db.config/abre-conexao!))
