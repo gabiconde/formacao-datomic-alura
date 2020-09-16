@@ -74,3 +74,13 @@
             (d/history db) venda-id)
        (sort-by first)))
 
+(defn historico-geral
+  [db time]
+  (let [filtrado (d/since db time)]
+    (->> (d/q '[:find ?instante ?status ?id
+                :in $ $filtrado
+                :where [$ ?venda :venda/id ?id]
+                [$filtrado ?venda :venda/status ?status ?tx true]
+                [$filtrado ?tx :db/txInstant ?instante]]
+              db filtrado)
+         (sort-by first))))

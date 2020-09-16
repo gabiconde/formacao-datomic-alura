@@ -30,3 +30,6 @@
 (pprint (count (db.venda/todas-canceladas (d/db conn))))
 (pprint (count (db.venda/todas (d/db conn))))
 (pprint (count (db.venda/todas-ativas (d/db conn))))
+
+;since retorna mudança desde
+(pprint (db.venda/historico-geral (d/db conn) #inst "2020-09-15T13:43:20.326-00:00"))
